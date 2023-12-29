@@ -1,0 +1,144 @@
+datasource db {
+    provider = "mongodb"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model Account {
+    id                String  @id @default(auto()) @map("_id") @db.ObjectId
+    userId            String  @db.ObjectId
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String?
+    access_token      String?
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String?
+    session_state     String?
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(auto()) @map("_id") @db.ObjectId
+    sessionToken String   @unique
+    userId       String   @db.ObjectId
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Schema for User Profiles
+model User {
+    id             String    @id @default(auto()) @map("_id") @db.ObjectId
+    email          String    @unique
+    hashedPassword String
+    name           String
+    address        String
+    phone          String?
+    orders         Order[]
+    role           UserRole  @default(CUSTOMER)
+    createdAt      DateTime  @default(now())
+    updatedAt      DateTime  @updatedAt
+    Account        Account[]
+    Session        Session[]
+}
+
+enum UserRole {
+    CUSTOMER
+    RESTAURANT_OWNER
+    DELIVERY_PERSON
+}
+
+// Schema for Restaurants
+model Restaurant {
+    id          String   @id @default(auto()) @map("_id") @db.ObjectId
+    name        String
+    description String
+    address     String
+    phone       String
+    menu        Menu[]
+    owner       String   @db.ObjectId
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+// Schema for Menu
+model Menu {
+    id           String      @id @default(auto()) @map("_id") @db.ObjectId
+    restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+    restaurantId String      @db.ObjectId
+    items        MenuItem[]
+    createdAt    DateTime    @default(now())
+    updatedAt    DateTime    @updatedAt
+}
+
+model MenuItem {
+    id          String  @id @default(auto()) @map("_id") @db.ObjectId
+    name        String
+    description String
+    price       Float
+    category    String
+    available   Boolean @default(true)
+    Menu        Menu?   @relation(fields: [menuId], references: [id])
+    menuId      String? @db.ObjectId
+}
+
+// Schema for Orders
+model Order {
+    id         String      @id @default(auto()) @map("_id") @db.ObjectId
+    items      OrderItem[]
+    total      Float
+    status     OrderStatus @default(PENDING)
+    customer   User        @relation(fields: [customerId], references: [id])
+    customerId String      @db.ObjectId
+    paymentId  String      @db.ObjectId
+    createdAt  DateTime    @default(now())
+    updatedAt  DateTime    @updatedAt
+}
+
+model OrderItem {
+    id         String  @id @default(auto()) @map("_id") @db.ObjectId
+    menuItemId String  @db.ObjectId
+    quantity   Int
+    price      Float
+    Order      Order?  @relation(fields: [orderId], references: [id])
+    orderId    String? @db.ObjectId
+}
+
+enum OrderStatus {
+    PENDING
+    CONFIRMED
+    IN_TRANSIT
+    DELIVERED
+    CANCELLED
+}
+
+// Schema for Payments
+model Payment {
+    id        String        @id @default(auto()) @map("_id") @db.ObjectId
+    orderId   String        @db.ObjectId
+    amount    Float
+    method    PaymentMethod
+    status    PaymentStatus
+    createdAt DateTime      @default(now())
+    updatedAt DateTime      @updatedAt
+}
+
+enum PaymentMethod {
+    CARD
+    PAYPAL
+    CASH
+}
+
+enum PaymentStatus {
+    PENDING
+    COMPLETED
+    FAILED
+}
