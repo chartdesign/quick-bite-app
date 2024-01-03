@@ -1,32 +1,41 @@
 import React from "react";
 import Image from "next/image";
 import RestaurantCard from "@/components/ui/RestaurantCard";
+import { fetchRestaurants } from "@/lib/utils/fetchRestarants";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
-const restaurants = [
-  {
-    name: "Bruncherie",
-    description: "Breakfast, lunch, desserts",
-    imageUrl: "/restaurant1.jpeg", // Replace with actual image path
-    price: "$$",
-    deliveryTime: "25-35 min",
-  },
-  {
-    name: "Pasta Palace",
-    description: "Authentic Italian pastas",
-    imageUrl: "/restaurant1.jpeg", // Replace with actual image path
-    price: "$$$",
-    deliveryTime: "30-45 min",
-  },
-  {
-    name: "Burger Bistro",
-    description: "Gourmet burgers and fries",
-    imageUrl: "/restaurant1.jpeg", // Replace with actual image path
-    price: "$",
-    deliveryTime: "15-25 min",
-  },
-];
+// const restaurants = [
+//   {
+//     name: "Bruncherie",
+//     description: "Breakfast, lunch, desserts",
+//     imageUrl: "/restaurant1.jpeg", // Replace with actual image path
+//     price: "$$",
+//     deliveryTime: "25-35 min",
+//   },
+//   {
+//     name: "Pasta Palace",
+//     description: "Authentic Italian pastas",
+//     imageUrl: "/restaurant1.jpeg", // Replace with actual image path
+//     price: "$$$",
+//     deliveryTime: "30-45 min",
+//   },
+//   {
+//     name: "Burger Bistro",
+//     description: "Gourmet burgers and fries",
+//     imageUrl: "/restaurant1.jpeg", // Replace with actual image path
+//     price: "$",
+//     deliveryTime: "15-25 min",
+//   },
+// ];
+async function getData() {
+  const restaurants = await prisma.restaurant.findMany();
+  return restaurants;
+}
 
-const page = () => {
+const page = async () => {
+  const restaurants = await getData();
+
   return (
     <>
       <Image
@@ -62,16 +71,15 @@ const page = () => {
       <h1 className='text-2xl font-semibold'>Popular Restaurants</h1>
       <div className='flex flex-col items-center justify-center p-4 border-b border-darkBlue/25'>
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-4 justify-items-center md:justify-items-center'>
-          {restaurants.map((restaurant, index) => (
-            <RestaurantCard
-              key={index}
-              name={restaurant.name}
-              description={restaurant.description}
-              imageUrl={restaurant.imageUrl}
-              price={restaurant.price}
-              deliveryTime={restaurant.deliveryTime}
-            />
-          ))}
+          {restaurants &&
+            restaurants.map((restaurant) => (
+              <RestaurantCard
+                key={restaurant.id}
+                name={restaurant.name}
+                description={restaurant.description}
+                address={restaurant.address}
+              />
+            ))}
         </div>
       </div>
     </>

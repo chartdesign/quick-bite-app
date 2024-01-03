@@ -1,18 +1,12 @@
 import Image from "next/image";
 import React from "react";
 
-const RestaurantCard = ({
-  name,
-  description,
-  imageUrl,
-  price,
-  deliveryTime,
-}) => {
+const RestaurantCard = ({ name, description, address }) => {
   return (
     <div className='min-w-[275px] max-w-sm rounded-2xl overflow-hidden shadow-lg bg-white p-2'>
       <Image
         className='w-full'
-        src={imageUrl}
+        src='/restaurant1.jpeg'
         width={192}
         height={264}
         alt='Food'
@@ -23,10 +17,10 @@ const RestaurantCard = ({
       </div>
       <div className='px-6 pt-4 pb-2'>
         <span className='inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2'>
-          {deliveryTime}
+          15-25 mins
         </span>
         <span className='inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2'>
-          {price}
+          {address}
         </span>
       </div>
     </div>
