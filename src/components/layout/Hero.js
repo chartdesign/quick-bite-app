@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const HeroSection = () => {
   return (
@@ -31,6 +32,9 @@ const HeroSection = () => {
                 className='p-3 flex-grow'
               />
               <button className='bg-darkBlue text-white p-3'>Search</button>
+              <Link href='/restaurants' className='bg-darkBlue text-white p-3'>
+                View all restaurants
+              </Link>
             </div>
           </div>
         </div>

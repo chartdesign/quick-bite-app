@@ -2,39 +2,9 @@ import React from "react";
 import Image from "next/image";
 import RestaurantCard from "@/components/ui/RestaurantCard";
 import { fetchRestaurants } from "@/lib/utils/fetchRestarants";
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
-
-// const restaurants = [
-//   {
-//     name: "Bruncherie",
-//     description: "Breakfast, lunch, desserts",
-//     imageUrl: "/restaurant1.jpeg", // Replace with actual image path
-//     price: "$$",
-//     deliveryTime: "25-35 min",
-//   },
-//   {
-//     name: "Pasta Palace",
-//     description: "Authentic Italian pastas",
-//     imageUrl: "/restaurant1.jpeg", // Replace with actual image path
-//     price: "$$$",
-//     deliveryTime: "30-45 min",
-//   },
-//   {
-//     name: "Burger Bistro",
-//     description: "Gourmet burgers and fries",
-//     imageUrl: "/restaurant1.jpeg", // Replace with actual image path
-//     price: "$",
-//     deliveryTime: "15-25 min",
-//   },
-// ];
-async function getData() {
-  const restaurants = await prisma.restaurant.findMany();
-  return restaurants;
-}
 
 const page = async () => {
-  const restaurants = await getData();
+  const restaurants = await fetchRestaurants();
 
   return (
     <>
